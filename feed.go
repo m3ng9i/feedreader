@@ -35,7 +35,7 @@ type Feed struct {
     FeedLink    string  // url of this feed
     Author      *FeedPerson
     Generator   string
-    Updated     time.Time 
+    Updated     time.Time
     Items       []*FeedItem
 }
 
@@ -63,37 +63,6 @@ func ParseTime(s string) (time.Time, bool) {
         }
     }
     return time.Time{}, false
-}
-
-
-func WeekdayToNumber(s string) (week time.Weekday, ok bool) {
-    ok = true
-    switch strings.ToLower(s) {
-        case "monday":
-            week = time.Monday
-            return
-        case "tuesday":
-            week = time.Tuesday
-            return
-        case "wednesday":
-            week = time.Wednesday
-            return
-        case "thursday":
-            week = time.Thursday
-            return
-        case "friday":
-            week = time.Friday
-            return
-        case "saturday":
-            week = time.Saturday
-            return
-        case "sunday":
-            week = time.Sunday
-            return
-    }
-
-    ok = false // error
-    return
 }
 
 
@@ -318,7 +287,7 @@ func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
         }
 
         if i.Content != nil {
-            var t Atom10Text 
+            var t Atom10Text
             t.Content = i.Content.Content
             t.Type = i.Content.Type
             item.Content = t.Html()

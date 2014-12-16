@@ -81,6 +81,37 @@ type Rss20 struct {
 }
 
 
+func weekdayToNumber(s string) (week time.Weekday, ok bool) {
+    ok = true
+    switch strings.ToLower(s) {
+        case "monday":
+            week = time.Monday
+            return
+        case "tuesday":
+            week = time.Tuesday
+            return
+        case "wednesday":
+            week = time.Wednesday
+            return
+        case "thursday":
+            week = time.Thursday
+            return
+        case "friday":
+            week = time.Friday
+            return
+        case "saturday":
+            week = time.Saturday
+            return
+        case "sunday":
+            week = time.Sunday
+            return
+    }
+
+    ok = false // error
+    return
+}
+
+
 func Rss20Parse(b []byte) (rss *Rss20, err error) {
 
     err = xml.Unmarshal(b, &rss)
@@ -98,7 +129,7 @@ func Rss20Parse(b []byte) (rss *Rss20, err error) {
 
     days := set.New()
     for _, i := range(rss.SkipDaysRaw) {
-        n, ok := WeekdayToNumber(i)
+        n, ok := weekdayToNumber(i)
         if ok {
             days.Add(n)
         }
