@@ -1,7 +1,6 @@
 package feedreader
 
 import "time"
-import "strings"
 import "regexp"
 import "encoding/xml"
 import "errors"
@@ -330,4 +329,16 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
 
 func Parse(xmldata []byte, feedlink string) (*Feed, error) {
     return ParseString(string(xmldata), feedlink)
+}
+
+
+// Grap rss or atom feed and return a *Feed struct
+func FetchFeed(feedlink string) (feed *Feed, err error) {
+
+    b, err := Fetch(feedlink)
+    if err != nil {
+        return
+    }
+    feed, err = Parse(b, feedlink)
+    return
 }
