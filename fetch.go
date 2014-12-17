@@ -5,7 +5,7 @@ import "io/ioutil"
 import "github.com/m3ng9i/go-utils/xml"
 
 // fetch feed content from a url, return []byte
-func Fetch(url string) ([]byte, error) {
+func FetchByte(url string) ([]byte, error) {
     r, err := http.Get(url)
     if err != nil {
         return []byte{}, err
@@ -25,7 +25,7 @@ func Fetch(url string) ([]byte, error) {
 
 // fetch feed content from a url, return string
 func FetchString(url string) (string, error) {
-    b, err := Fetch(url)
+    b, err := FetchByte(url)
     if err != nil {
         return "", err
     }

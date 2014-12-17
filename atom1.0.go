@@ -1,3 +1,5 @@
+package feedreader
+
 /*
 Atom 1.0 parser
 Only support feed documents, not support entry documents.
@@ -5,8 +7,6 @@ Only support feed documents, not support entry documents.
 The elements below are not supported.
     feed/entry/source
 */
-
-package feedreader
 
 import "fmt"
 import "time"

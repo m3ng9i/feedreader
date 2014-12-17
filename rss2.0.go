@@ -1,3 +1,5 @@
+package feedreader
+
 /*
 RSS 2.0 parser
 
@@ -11,8 +13,6 @@ channel/item/category
 channel/item/source
 */
 
-package feedreader
-
 import "time"
 import "strings"
 import "encoding/xml"
@@ -20,7 +20,7 @@ import "errors"
 import "fmt"
 import "github.com/m3ng9i/go-utils/set"
 
-// rss/image node
+// rss/image element
 type Rss20Image struct {
     Url             string              `xml:"url"`
     Title           string              `xml:"title"`
@@ -30,21 +30,21 @@ type Rss20Image struct {
     Description     string              `xml:"description"`
 }
 
-// rss/item/enclosure node
+// rss/item/enclosure element
 type Rss20ItemEnclosure struct {
     Url             string              `xml:"url,attr"`
     Length          uint64              `xml:"length,attr"`
     Type            string              `xml:"type,attr"`
 }
 
-// rss/item/guid node
+// rss/item/guid element
 type Rss20ItemGuid struct {
     Guid            string              `xml:",chardata"`
     IsPermaLinkRaw  string              `xml:"isPermaLink,attr"`
     IsPermaLink     bool
 }
 
-// rss/item node
+// rss/item element
 type Rss20Item struct {
     Title               string              `xml:"title"`
     Link                string              `xml:"link"`
@@ -57,7 +57,7 @@ type Rss20Item struct {
     PubDate             time.Time
 }
 
-// whole rss node
+// whole rss element
 type Rss20 struct {
     Version             string              `xml:"version,attr"`
     Title               string              `xml:"channel>title"`
@@ -112,6 +112,7 @@ func weekdayToNumber(s string) (week time.Weekday, ok bool) {
 }
 
 
+// parse rss xml data to *RSS20 structure
 func Rss20Parse(b []byte) (rss *Rss20, err error) {
 
     err = xml.Unmarshal(b, &rss)
@@ -155,6 +156,7 @@ func Rss20Parse(b []byte) (rss *Rss20, err error) {
 }
 
 
+// parse rss xml data to *RSS20 structure
 func Rss20ParseString(xmldata string) (*Rss20, error) {
     return Rss20Parse([]byte(xmldata))
 }

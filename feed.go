@@ -29,7 +29,7 @@ type Feed struct {
     Title       string
     Description string  // rss's description or atom's subtitle
     Rights      string
-    Icon        string  // base64 encoded icon image data
+    Icon        string  // base64 encoded icon image data, not finished yet
     Link        string  // url to the website
     FeedLink    string  // url of this feed
     Author      *FeedPerson
@@ -103,11 +103,13 @@ func FeedVerifyString(xmldata string) (feedtype, version string) {
 }
 
 
+// determine if a xml string is a rss or atom
 func FeedVerify(xmldata []byte) (feedtype, version string) {
     return FeedVerifyString(string(xmldata))
 }
 
 
+// parse rss data to *Feed structure
 func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 
     rss := &Rss20{}
@@ -181,10 +183,11 @@ func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 }
 
 
+// parse atom data to *Feed structure
 func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 
     atom := &Atom10Feed{}
-    atom, err = Atom10ParseString(xmldata) 
+    atom, err = Atom10ParseString(xmldata)
     if err != nil {
         return
     }
@@ -305,6 +308,7 @@ func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 }
 
 
+// parse rss 2.0 or atom 1.0 to *Feed structure
 func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
 
     feedtype, version := FeedVerifyString(xmldata)
@@ -327,15 +331,16 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
 }
 
 
+// parse rss 2.0 or atom 1.0 to *Feed structure
 func Parse(xmldata []byte, feedlink string) (*Feed, error) {
     return ParseString(string(xmldata), feedlink)
 }
 
 
 // Grap rss or atom feed and return a *Feed struct
-func FetchFeed(feedlink string) (feed *Feed, err error) {
+func Fetch(feedlink string) (feed *Feed, err error) {
 
-    b, err := Fetch(feedlink)
+    b, err := FetchByte(feedlink)
     if err != nil {
         return
     }
