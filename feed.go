@@ -36,6 +36,7 @@ type Feed struct {
     Generator   string
     Updated     time.Time
     Items       []*FeedItem
+    Guid        string  // if type is atom, this value is atom's id. if type is rss or atom's id is empty, Guid is same as FeedLink
 }
 
 /* Try to parse time string in different layouts.
@@ -150,6 +151,8 @@ func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
         feed.Updated = rss.LastBuildDate
     }
 
+    feed.Guid = feed.FeedLink
+
     items := make([]*FeedItem, 0)
 
     for _, i := range(rss.Item) {
@@ -249,6 +252,11 @@ func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
                 break
             }
         }
+    }
+
+    feed.Guid = atom.Id
+    if feed.Guid == "" {
+        feed.Guid = feed.FeedLink
     }
 
     items := make([]*FeedItem, 0)
