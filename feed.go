@@ -329,8 +329,7 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
         return
 
     } else {
-        err = errors.New(
-            fmt.Sprintf("%s %s is not supported", feedtype, version))
+        err = errors.New("Request url is not a valid feed.")
         return
     }
 
