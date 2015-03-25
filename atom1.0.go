@@ -10,7 +10,6 @@ The elements below are not supported.
 
 import "fmt"
 import "time"
-import "errors"
 import "html"
 import "encoding/xml"
 import myhtml "github.com/m3ng9i/go-utils/html"
@@ -22,7 +21,7 @@ type Atom10Person struct {
     Uri         string  `xml:"uri"`
 }
 
-// text constructs: rights, title, subtitle, summary
+// Text constructs: rights, title, subtitle, summary
 // Type is "xhtml", "html" or "text"
 type Atom10Text struct {
     Content     string  `xml:",chardata"`
@@ -99,7 +98,7 @@ func (t *Atom10Text) String() string {
     if t == nil {
         return ""
     }
-    
+
     if t.Type == "xhtml" {
 
         var inner struct {
@@ -153,20 +152,20 @@ arguments:
 
 return value:
     feed    point to a Atom10Feed struct
-    err     error message
+    err     error message which type is ParseError
 */
 func Atom10Parse(b []byte) (feed *Atom10Feed, err error) {
 
     const xmlns = "http://www.w3.org/2005/Atom"
 
-    err = xml.Unmarshal(b, &feed)
-    if err != nil {
+    e := xml.Unmarshal(b, &feed)
+    if e != nil {
+        err = &ParseError{Err: e}
         return
     }
 
     if feed.Xmlns != xmlns {
-        err = errors.New(fmt.Sprintf("Atom 1.0's xmlns should be " +
-            "'%s', '%s' is not correct", xmlns, feed.Xmlns))
+        err = &ParseError{Err: fmt.Errorf("Atom 1.0's xmlns should be '%s', '%s' is not correct.", xmlns, feed.Xmlns)}
         return
     }
 

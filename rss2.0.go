@@ -16,7 +16,6 @@ channel/item/source
 import "time"
 import "strings"
 import "encoding/xml"
-import "errors"
 import "fmt"
 import "github.com/m3ng9i/go-utils/set"
 
@@ -112,17 +111,19 @@ func weekdayToNumber(s string) (week time.Weekday, ok bool) {
 }
 
 
-// parse rss xml data to *RSS20 structure
+// Parse rss xml data to *RSS20 structure.
+// If returned error is not nil, it will be ParseError.
 func Rss20Parse(b []byte) (rss *Rss20, err error) {
 
-    err = xml.Unmarshal(b, &rss)
-    if err != nil {
+    e := xml.Unmarshal(b, &rss)
+    if e != nil {
+        err = &ParseError{Err:e}
         return
     }
 
     if rss.Version != "2.0" {
-        err = errors.New(fmt.Sprintf("RSS version: %s is not supported.",
-            rss.Version))
+        err = &ParseError{Err:fmt.Errorf("RSS version: %s is not supported.", rss.Version)}
+        return
     }
 
     rss.PubDate, _ = ParseTime(rss.PubDateRaw)
@@ -149,14 +150,14 @@ func Rss20Parse(b []byte) (rss *Rss20, err error) {
         }
 
         rss.Item[i].PubDate, _ = ParseTime(rss.Item[i].PubDateRaw)
-
     }
 
     return
 }
 
 
-// parse rss xml data to *RSS20 structure
+// Parse rss xml data to *RSS20 structure
+// If returned error is not nil, it will be ParseError.
 func Rss20ParseString(xmldata string) (*Rss20, error) {
     return Rss20Parse([]byte(xmldata))
 }

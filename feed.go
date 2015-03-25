@@ -3,7 +3,6 @@ package feedreader
 import "time"
 import "regexp"
 import "encoding/xml"
-import "errors"
 import "fmt"
 import "html"
 
@@ -110,12 +109,13 @@ func FeedVerify(xmldata []byte) (feedtype, version string) {
 }
 
 
-// parse rss data to *Feed structure
+// Parse rss data to *Feed structure.
+// If returned error is not nil, it will be ParseError.
 func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 
-    rss := &Rss20{}
-    rss, err = Rss20ParseString(xmldata)
-    if err != nil {
+    rss, e := Rss20ParseString(xmldata)
+    if e != nil {
+        err = &ParseError{Err:e}
         return
     }
 
@@ -186,12 +186,13 @@ func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 }
 
 
-// parse atom data to *Feed structure
+// Parse atom data to *Feed structure
+// If returned error is not nil, it will be ParseError.
 func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 
-    atom := &Atom10Feed{}
-    atom, err = Atom10ParseString(xmldata)
-    if err != nil {
+    atom, e := Atom10ParseString(xmldata)
+    if e != nil {
+        err = &ParseError{Err:e}
         return
     }
 
@@ -316,7 +317,8 @@ func atom10ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
 }
 
 
-// parse rss 2.0 or atom 1.0 to *Feed structure
+// Parse rss 2.0 or atom 1.0 to *Feed structure
+// If returned error is not nil, it will be ParseError.
 func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
 
     feedtype, version := FeedVerifyString(xmldata)
@@ -329,7 +331,7 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
         return
 
     } else {
-        err = errors.New("Request url is not a valid feed.")
+        err = &ParseError{Err:fmt.Errorf("Request url: %s is not a valid feed.", feedlink)}
         return
     }
 
@@ -338,19 +340,24 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
 }
 
 
-// parse rss 2.0 or atom 1.0 to *Feed structure
+// Parse rss 2.0 or atom 1.0 to *Feed structure
+// If returned error is not nil, it will be ParseError.
 func Parse(xmldata []byte, feedlink string) (*Feed, error) {
     return ParseString(string(xmldata), feedlink)
 }
 
 
 // Grap rss or atom feed and return a *Feed struct
+// If returned error is not nil, it will be FetchError or ParseError.
 func Fetch(feedlink string) (feed *Feed, err error) {
 
+    // If err is not nil, it will be FetchError.
     b, err := FetchByte(feedlink)
     if err != nil {
         return
     }
+
+    // If err is not nil, it will be ParseError.
     feed, err = Parse(b, feedlink)
     return
 }
