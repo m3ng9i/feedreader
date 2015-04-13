@@ -2,6 +2,7 @@ package feedreader
 
 import "time"
 import "regexp"
+import "strings"
 import "encoding/xml"
 import "fmt"
 import "html"
@@ -54,6 +55,10 @@ otherwise it's true.
 func ParseTime(s string) (time.Time, bool) {
     layout := []string{time.RFC1123, time.RFC1123Z, time.RFC822, time.RFC822Z,
         time.RFC3339, time.RFC3339Nano}
+
+    layout = append(layout, "2006-01-02 15:04:05 -0700")
+
+    s = strings.TrimSpace(s)
 
     for _, item := range(layout) {
         t, e := time.Parse(item, s)
