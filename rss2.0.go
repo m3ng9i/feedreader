@@ -60,7 +60,7 @@ type Rss20Item struct {
 type Rss20 struct {
     Version             string              `xml:"version,attr"`
     Title               string              `xml:"channel>title"`
-    Link                string              `xml:"channel>link"`
+    Link                string
     Description         string              `xml:"channel>description"`
     Language            string              `xml:"channel>language"`
     Copyright           string              `xml:"channel>copyright"`
@@ -152,6 +152,7 @@ func Rss20Parse(b []byte) (rss *Rss20, err error) {
         rss.Item[i].PubDate, _ = ParseTime(rss.Item[i].PubDateRaw)
     }
 
+    rss.Link, err = rss20ParseLink(b)
     return
 }
 
@@ -163,3 +164,44 @@ func Rss20ParseString(xmldata string) (*Rss20, error) {
 }
 
 
+/*
+Parse link element of rss.
+
+The below rss example provide two link elements: one with empty namespace and another with namespace 'atom'.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Title</title>
+    <description>Some description.</description>
+	<link>http://www.example.com/</link>
+    <atom:link href="http://www.example.com/feed.xml" rel="self" type="application/rss+xml"/>
+    ...
+  </channel>
+</rss>
+
+If unmarshal the xml into the following struct:
+    Link string `xml:"channel>link"`
+the second link(the one with namespace)'s value will override the first one, so the Link will be empty string, which is not expected.
+
+This function could solve the problem.
+*/
+func rss20ParseLink(b []byte) (link string, err error) {
+    var t struct {
+        Link []string `xml:"channel>link"`
+    }
+
+	err = xml.Unmarshal(b, &t)
+    if err != nil {
+        return
+    }
+
+    for _, item := range t.Link {
+        if item != "" {
+            link = item
+            return
+        }
+    }
+
+    return
+}
