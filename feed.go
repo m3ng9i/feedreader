@@ -329,19 +329,48 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
     feedtype, version := FeedVerifyString(xmldata)
     if feedtype == "rss" && version == "2.0" {
         feed, err = rss20ToFeed(xmldata, feedlink)
-        return
 
     } else if feedtype == "atom" && version == "1.0" {
         feed, err = atom10ToFeed(xmldata, feedlink)
-        return
 
     } else {
         err = &ParseError{Err:fmt.Errorf("Request url: %s is not a valid feed.", feedlink)}
         return
     }
 
-    return
+    trimSpace(&feed.Title)
+    trimSpace(&feed.Description)
+    trimSpace(&feed.Link)
+    trimSpace(&feed.FeedLink)
+    trimSpace(&feed.Guid)
 
+    if feed.Author != nil {
+        trimSpace(&feed.Author.Name)
+        trimSpace(&feed.Author.Email)
+        trimSpace(&feed.Author.Uri)
+    }
+
+    for i, _ := range feed.Items {
+        if feed.Items[i] != nil {
+            trimSpace(&feed.Items[i].Title)
+            trimSpace(&feed.Items[i].Link)
+            trimSpace(&feed.Items[i].Guid)
+            if feed.Items[i].Author != nil {
+                trimSpace(&feed.Items[i].Author.Name)
+                trimSpace(&feed.Items[i].Author.Email)
+                trimSpace(&feed.Items[i].Author.Uri)
+            }
+        }
+    }
+
+    return
+}
+
+
+func trimSpace(s *string) {
+    if s != nil {
+        *s = strings.TrimSpace(*s)
+    }
 }
 
 
