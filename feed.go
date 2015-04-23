@@ -380,18 +380,3 @@ func Parse(xmldata []byte, feedlink string) (*Feed, error) {
     return ParseString(string(xmldata), feedlink)
 }
 
-
-// Grap rss or atom feed and return a *Feed struct
-// If returned error is not nil, it will be FetchError or ParseError.
-func Fetch(feedlink string) (feed *Feed, err error) {
-
-    // If err is not nil, it will be FetchError.
-    b, err := FetchByte(feedlink)
-    if err != nil {
-        return
-    }
-
-    // If err is not nil, it will be ParseError.
-    feed, err = Parse(b, feedlink)
-    return
-}
