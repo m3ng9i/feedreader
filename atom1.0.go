@@ -135,7 +135,7 @@ func (t *Atom10Text) Html() string {
         return inner.Content
 
     } else if t.Type == "html" {
-        return html.UnescapeString(t.Content)
+        return transformContent(t.Content)
 
     } else {
         return myhtml.Text2Html(t.Content)

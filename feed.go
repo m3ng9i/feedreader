@@ -5,7 +5,6 @@ import "regexp"
 import "strings"
 import "encoding/xml"
 import "fmt"
-import "html"
 
 type FeedPerson struct {
     Name        string
@@ -179,7 +178,7 @@ func rss20ToFeed(xmldata, feedlink string) (feed *Feed, err error) {
             item.Author = author
         }
 
-        item.Content = html.UnescapeString(i.Description)
+        item.Content = transformContent(i.Description)
         items = append(items, item)
     }
 
