@@ -65,19 +65,8 @@ func FetchString(url string, fetcher ...*httphelper.Fetcher) (s string, err erro
 // If returned error is not nil, it will be FetchError or ParseError.
 func Fetch(feedlink string, fetcher ...*httphelper.Fetcher) (feed *Feed, err error) {
 
-    var ft *httphelper.Fetcher
-    if len(fetcher) > 0 && fetcher[0] != nil {
-        ft = fetcher[0]
-    } else {
-        ft = defaultFetcher
-    }
-    if ft == nil {
-        err = errors.New("Fetcher is nil")
-        return
-    }
-
     // If err is not nil, it will be FetchError.
-    data, err := FetchByte(feedlink)
+    data, err := FetchByte(feedlink, fetcher...)
     if err != nil {
         return
     }
