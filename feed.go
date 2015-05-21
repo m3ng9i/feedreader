@@ -5,6 +5,8 @@ import "regexp"
 import "strings"
 import "encoding/xml"
 import "fmt"
+import "net/url"
+import h "github.com/m3ng9i/go-utils/html"
 
 type FeedPerson struct {
     Name        string
@@ -340,6 +342,17 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
     trimSpace(&feed.Title)
     trimSpace(&feed.Description)
     trimSpace(&feed.Link)
+
+    var tmp string
+
+    if feed.Link == "" || feed.Link == "/" {
+        tmp, err = h.AbsUrl(feedlink, "/")
+        if err == nil {
+            feed.Link = tmp
+        }
+        err = nil
+    }
+
     trimSpace(&feed.FeedLink)
     trimSpace(&feed.Guid)
 
@@ -352,13 +365,36 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
     for i, _ := range feed.Items {
         if feed.Items[i] != nil {
             trimSpace(&feed.Items[i].Title)
-            trimSpace(&feed.Items[i].Link)
-            trimSpace(&feed.Items[i].Guid)
+
             if feed.Items[i].Author != nil {
                 trimSpace(&feed.Items[i].Author.Name)
                 trimSpace(&feed.Items[i].Author.Email)
                 trimSpace(&feed.Items[i].Author.Uri)
             }
+
+            trimSpace(&feed.Items[i].Link)
+            feed.Items[i].Link, err = h.AbsUrl(feedlink, feed.Items[i].Link)
+            tmp, err = h.AbsUrl(feedlink, feed.Items[i].Link)
+            if err == nil {
+                feed.Items[i].Link = tmp
+            }
+
+            trimSpace(&feed.Items[i].Guid)
+            _, err = url.Parse(feed.Items[i].Guid)
+            // feed.Items[i].Guid) is a url
+            if err == nil {
+                tmp, err = h.AbsUrl(feedlink, feed.Items[i].Guid)
+                if err == nil {
+                    feed.Items[i].Guid = tmp
+                }
+            }
+
+            tmp, err = h.AbsUrlHtml(feed.Items[i].Link, feed.Items[i].Content)
+            if err == nil {
+                feed.Items[i].Content = tmp
+            }
+
+            err = nil
         }
     }
 
