@@ -339,6 +339,10 @@ func ParseString(xmldata string, feedlink string) (feed *Feed, err error) {
         return
     }
 
+    if err != nil {
+        return
+    }
+
     trimSpace(&feed.Title)
     trimSpace(&feed.Description)
     trimSpace(&feed.Link)
