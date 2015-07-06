@@ -11,7 +11,6 @@ The elements below are not supported.
 import "fmt"
 import "time"
 import "html"
-import "encoding/xml"
 
 
 // Person Constructs: author, contributor element
@@ -105,7 +104,7 @@ func (t *Atom10Text) String() string {
             Content string `xml:",innerxml"`
         }
 
-        err := xml.Unmarshal([]byte(t.Content), &inner)
+        err := unmarshal([]byte(t.Content), &inner)
         if err != nil {
             return ""
         }
@@ -127,7 +126,7 @@ func (t *Atom10Text) Html() string {
             Content string `xml:",innerxml"`
         }
 
-        err := xml.Unmarshal([]byte(t.Content), &inner)
+        err := unmarshal([]byte(t.Content), &inner)
         if err != nil {
             return ""
         }
@@ -154,7 +153,7 @@ func Atom10Parse(b []byte) (feed *Atom10Feed, err error) {
 
     const xmlns = "http://www.w3.org/2005/Atom"
 
-    e := xml.Unmarshal(b, &feed)
+    e := unmarshal(b, &feed)
     if e != nil {
         err = &ParseError{Err: e}
         return

@@ -15,7 +15,6 @@ channel/item/source
 
 import "time"
 import "strings"
-import "encoding/xml"
 import "fmt"
 import "github.com/m3ng9i/go-utils/set"
 
@@ -115,7 +114,7 @@ func weekdayToNumber(s string) (week time.Weekday, ok bool) {
 // If returned error is not nil, it will be ParseError.
 func Rss20Parse(b []byte) (rss *Rss20, err error) {
 
-    e := xml.Unmarshal(b, &rss)
+    e := unmarshal(b, &rss)
     if e != nil {
         err = &ParseError{Err:e}
         return
@@ -191,7 +190,7 @@ func rss20ParseLink(b []byte) (link string, err error) {
         Link []string `xml:"channel>link"`
     }
 
-	err = xml.Unmarshal(b, &t)
+	err = unmarshal(b, &t)
     if err != nil {
         return
     }

@@ -3,7 +3,6 @@ package feedreader
 import "time"
 import "regexp"
 import "strings"
-import "encoding/xml"
 import "fmt"
 import "net/url"
 import h "github.com/m3ng9i/go-utils/html"
@@ -82,7 +81,7 @@ func FeedVerifyString(xmldata string) (feedtype, version string) {
             Version string `xml:"version,attr"`
         }
 
-        xml.Unmarshal([]byte(sub[0]), &t)
+        unmarshal([]byte(sub[0]), &t)
 
         feedtype = "rss"
         version = t.Version
@@ -96,7 +95,7 @@ func FeedVerifyString(xmldata string) (feedtype, version string) {
             Xmlns string `xml:"xmlns,attr"`
         }
 
-        xml.Unmarshal([]byte(sub[0]), &t)
+        unmarshal([]byte(sub[0]), &t)
 
         if t.Xmlns == "http://www.w3.org/2005/Atom" {
             feedtype = "atom"
