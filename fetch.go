@@ -30,11 +30,12 @@ func FetchByte(url string, fetcher ...*httphelper.Fetcher) (data []byte, err err
         return
     }
 
-    // Check if the first 80 bytes of the xml doc contains 'gbk' (just like: <?xml version="1.0" encoding="gbk"?>),
-    // if true, convert the gbk bytes to utf-8.
-    isGbk, _ := regexp.Match("(?i)gbk", data[:80])
+    // Check if the first 80 bytes of the xml doc contains 'gbk' or 'gb2312'
+    // just like: <?xml version="1.0" encoding="gbk"?>, or <?xml version="1.0" encoding="gb2312"?>
+    // if true, convert the bytes to utf-8.
+    isGbk, _ := regexp.Match("(?i)gbk|gb2312", data[:80])
     if isGbk {
-        // convert gbk to utf-8
+        // convert to utf-8
         data, err = enc.GbkToUtf8(data)
         if err != nil {
             return
